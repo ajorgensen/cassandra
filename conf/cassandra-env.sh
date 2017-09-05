@@ -212,6 +212,10 @@ JVM_OPTS="$JVM_OPTS -javaagent:$CASSANDRA_HOME/lib/jamm-0.3.0.jar"
 # set jvm HeapDumpPath with CASSANDRA_HEAPDUMP_DIR
 if [ "x$CASSANDRA_HEAPDUMP_DIR" != "x" ]; then
     JVM_OPTS="$JVM_OPTS -XX:HeapDumpPath=$CASSANDRA_HEAPDUMP_DIR/cassandra-`date +%s`-pid$$.hprof"
+else
+    cassandra_home=`getent passwd cassandra | awk -F ':' '{ print $6; }'`
+    heap_dump_f="$cassandra_home/java_`date +%s`.hprof"
+    JVM_OPTS="$JVM_OPTS -XX:HeapDumpPath=$heap_dump_f"
 fi
 
 # jmx: metrics and administration interface
@@ -224,9 +228,9 @@ fi
 # for more on configuring JMX through firewalls, etc. (Short version:
 # get it working with no firewall first.)
 #
-# Cassandra ships with JMX accessible *only* from localhost.  
+# Cassandra ships with JMX accessible *only* from localhost.
 # To enable remote JMX connections, uncomment lines below
-# with authentication and/or ssl enabled. See https://wiki.apache.org/cassandra/JmxSecurity 
+# with authentication and/or ssl enabled. See https://wiki.apache.org/cassandra/JmxSecurity
 #
 if [ "x$LOCAL_JMX" = "x" ]; then
     LOCAL_JMX=yes
@@ -308,4 +312,3 @@ if [ "x$MX4J_PORT" != "x" ]; then
 fi
 
 JVM_OPTS="$JVM_OPTS $JVM_EXTRA_OPTS"
-
